@@ -184,11 +184,6 @@ def prog():
     return jsonify(progress)
 
 
-@app.route("/downloads")
-def get_downloads():
-    return jsonify(downloads)
-
-
 @app.route("/download/<filename>")
 def download_file(filename):
     return send_file(os.path.join(OUTPUT_DIR, filename), as_attachment=True)
