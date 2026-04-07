@@ -116,7 +116,7 @@ def is_valid(url):
 def download_book(book_id, pattern):
     images = []
 
-    for page in range(1, 100):
+    for page in range(1, 40):
         url = f"{BASE_URL}/{book_id}/ebook_img/{pattern}_{book_id}_{page}.png"
         try:
             r = requests.get(url, timeout=5)
