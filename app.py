@@ -9,7 +9,7 @@ OUTPUT_DIR = "books"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 progress = {"current": 0, "total": 1, "status": "Idle"}
-downloads = []
+downloads = os.listdir("books") if os.path.exists("books") else []
 
 HTML = """
 <!DOCTYPE html>
