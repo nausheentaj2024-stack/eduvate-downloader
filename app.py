@@ -111,32 +111,37 @@ def is_valid(url):
         return False
 
 def download_book(book_id, pattern):
-    folder = f"{OUTPUT_DIR}/{book_id}_{pattern}"
-    os.makedirs(folder, exist_ok=True)
+    import requests, os
+    from PIL import Image
 
     images = []
 
-    for page in range(1, 200):
+    for page in range(1, 100):
         url = f"{BASE_URL}/{book_id}/ebook_img/{pattern}_{book_id}_{page}.png"
         try:
             r = requests.get(url, timeout=5)
             if r.status_code == 200:
-                path = f"{folder}/page_{page}.png"
-                with open(path, "wb") as f:
+                filename = f"temp_{book_id}_{page}.png"
+                with open(filename, "wb") as f:
                     f.write(r.content)
-                images.append(path)
+                images.append(filename)
             else:
                 break
         except:
             break
 
     if images:
-        pdf_path = f"{folder}.pdf"
+        pdf_path = f"{book_id}_{pattern}.pdf"
         imgs = [Image.open(p).convert("RGB") for p in images]
         imgs[0].save(pdf_path, save_all=True, append_images=imgs[1:])
-        downloads.append(os.path.basename(pdf_path))
 
+        # delete temp images
+        for img in images:
+            os.remove(img)
 
+        return pdf_path
+
+    return None
 def run_task(start_id, end_id, cls, subject):
     global progress
 
