@@ -108,7 +108,8 @@ function loadDownload(){
 
 def is_valid(url):
     try:
-        return requests.head(url, timeout=3).status_code == 200
+        r = requests.get(url, timeout=3)
+        return r.status_code == 200
     except:
         return False
 
