@@ -40,8 +40,8 @@ a { color:#38bdf8; display:block; margin-top:10px; }
 <option value="EVS">EVS</option>
 </select>
 
-<input id="start" value="7160">
-<input id="end" value="7170">
+<input id="start" value="7163">
+<input id="end" value="7166">
 
 <button onclick="start()">Start</button>
 
@@ -55,6 +55,8 @@ a { color:#38bdf8; display:block; margin-top:10px; }
 
 <script>
 function start(){
+    document.getElementById("downloads").innerHTML = "";
+
     fetch("/start", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
@@ -92,6 +94,9 @@ function loadDownload(){
         if(data.file){
             document.getElementById("downloads").innerHTML =
             `<a href="/download/${data.file}" target="_blank">📄 Download Book</a>`;
+        } else {
+            document.getElementById("downloads").innerHTML =
+            "❌ No file found. Try different ID range.";
         }
     });
 }
@@ -147,6 +152,7 @@ def run_task(start_id, end_id, cls, subject):
     total = (end_id - start_id + 1) * len(patterns)
     progress["total"] = total
     progress["current"] = 0
+    last_download = ""
 
     for book_id in range(start_id, end_id + 1):
         for pattern in patterns:
@@ -154,13 +160,18 @@ def run_task(start_id, end_id, cls, subject):
 
             if is_valid(test_url):
                 progress["status"] = f"Downloading {pattern} ({book_id})"
+
                 pdf = download_book(book_id, pattern)
-                if pdf:
+
+                if pdf and os.path.exists(pdf):
                     last_download = pdf
+                    progress["status"] = f"✅ Ready: {pdf}"
+                    progress["current"] = progress["total"]
+                    return
 
             progress["current"] += 1
 
-    progress["status"] = "✅ Completed"
+    progress["status"] = "❌ No book found"
 
 @app.route("/")
 def home():
