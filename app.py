@@ -192,7 +192,15 @@ def get_downloads():
 @app.route("/download/<filename>")
 def download_file(filename):
     return send_file(os.path.join(OUTPUT_DIR, filename), as_attachment=True)
-
+@app.route("/downloads")
+def get_downloads():
+    import os
+    files = []
+    if os.path.exists("books"):
+        for f in os.listdir("books"):
+            if f.endswith(".pdf"):
+                files.append(f)
+    return jsonify(files)
 
 if __name__ == "__main__":
     app.run(debug=True)
